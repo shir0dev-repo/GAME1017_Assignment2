@@ -61,6 +61,8 @@ public class SoundManager : Singleton<SoundManager>
 
   public void PlayMusicNoFade(string soundKey)
   {
+    if (!_musicDictionary.ContainsKey(soundKey))
+      throw new System.IndexOutOfRangeException(soundKey + " was not present in the music dictionary!");
     _musicSource.Stop();
     _musicSource.clip = _musicDictionary[soundKey];
     _musicSource.Play();
