@@ -31,6 +31,15 @@ public class AchievementManager : Singleton<AchievementManager>
       "Survive for 2600m.",
       () => { return SaveDataManager.Instance.CurrentSave.FarthestDistance >= 2600; }
     ));
+    _achievementsList.Add(new Achievement(
+      "Did it hurt?",
+      "Take damage for the first time.",
+      () =>
+      {
+        if (PlayerController.Instance == null) return false;
+        else return PlayerController.Instance.PlayerHealth.CurrentHealth < 3;
+      }
+    ));
   }
 
   public Achievement[] GetUnlockedAchievements()

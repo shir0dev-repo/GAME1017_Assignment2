@@ -12,8 +12,6 @@ public class SoundManager : Singleton<SoundManager>
 
   private float _sfxVolumeCache = 0.4f, _musicVolumeCache = 0.2f, _masterVolumeCache = 0.75f;
 
-  private Coroutine _currentFadeInOutCO = null;
-
   protected override void Awake()
   {
     base.Awake();
@@ -34,14 +32,14 @@ public class SoundManager : Singleton<SoundManager>
     _musicSource.playOnAwake = true;
 
     SetMasterVolume(_masterVolumeCache);
-    PlayMusicNoFade("Intro");
+    PlayMusic("Intro");
   }
 
   private void InitResourceDictionaries()
   {
     _musicDictionary.Add("Intro", Resources.Load<AudioClip>("Audio/Intro"));
     _musicDictionary.Add("ActionStrike", Resources.Load<AudioClip>("Audio/ActionStrike"));
-    _musicDictionary.Add("GameOver", Resources.Load<AudioClip>("WakeUp"));
+    _musicDictionary.Add("GameOver", Resources.Load<AudioClip>("Audio/WakeUp"));
     _sfxDictionary.Add("Ouch", Resources.Load<AudioClip>("Audio/ManAccidentallyPunchingTheFloor"));
     _sfxDictionary.Add("Snake? Snaaake!", Resources.Load<AudioClip>("Audio/SnakeDeath"));
     _sfxDictionary.Add("Slide", Resources.Load<AudioClip>("Audio/Slide"));
@@ -56,16 +54,8 @@ public class SoundManager : Singleton<SoundManager>
     _sfxSource.PlayOneShot(_sfxDictionary[soundKey], volume);
   }
 
+
   public void PlayMusic(string soundKey)
-  {
-    if (!_musicDictionary.ContainsKey(soundKey))
-      throw new System.IndexOutOfRangeException(soundKey + " was not present in the music dictionary!");
-
-    if (_currentFadeInOutCO != null) return;
-    _currentFadeInOutCO = StartCoroutine(MusicFadeCoroutine(_musicDictionary[soundKey]));
-  }
-
-  public void PlayMusicNoFade(string soundKey)
   {
     if (!_musicDictionary.ContainsKey(soundKey))
       throw new System.IndexOutOfRangeException(soundKey + " was not present in the music dictionary!");
@@ -91,27 +81,5 @@ public class SoundManager : Singleton<SoundManager>
     _masterVolumeCache = value;
     SetSFXVolume(_sfxVolumeCache);
     SetMusicVolume(_musicVolumeCache);
-  }
-
-  private IEnumerator MusicFadeCoroutine(AudioClip clip)
-  {
-    float timeElapsed = 0;
-    float halfFadeDuration = 2.5f;
-    while (timeElapsed < halfFadeDuration)
-    {
-      timeElapsed += Time.deltaTime;
-      _musicSource.volume *= 1 - (timeElapsed / halfFadeDuration);
-      yield return new WaitForEndOfFrame();
-    }
-
-    timeElapsed = 0;
-    _musicSource.clip = clip;
-
-    while (timeElapsed < halfFadeDuration)
-    {
-      timeElapsed += Time.deltaTime;
-      _musicSource.volume = _masterVolumeCache * (timeElapsed / halfFadeDuration);
-      yield return new WaitForEndOfFrame();
-    }
   }
 }

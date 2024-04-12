@@ -154,6 +154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _jumpObstacle: {fileID: 5288047062035649223, guid: ffa1c1e4bc790914dbc027330878e26f, type: 3}
   _rollObstacle: {fileID: 8930671028132493521, guid: c985b7505b9c48d4580c6e6acc252abd, type: 3}
+  ShouldSpawn: 1
 --- !u!4 &116937703
 Transform:
   m_ObjectHideFlags: 0

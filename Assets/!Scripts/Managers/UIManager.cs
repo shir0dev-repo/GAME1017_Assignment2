@@ -2,9 +2,13 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class UIManager : Singleton<UIManager>
 {
+  [SerializeField] private GameObject _settingsPanel;
+  [SerializeField] private GameObject _backBtn;
+
   [Header("TitleScene")]
   [SerializeField] private GameObject _titlePanel;
 
@@ -50,12 +54,26 @@ public class UIManager : Singleton<UIManager>
 
   private void ResetUIState()
   {
-    foreach (var life in _lives)
-      life.SetActive(true);
+    if (PlayerController.Instance != null)
+      UpdateLives(PlayerController.Instance.PlayerHealth.CurrentHealth);
 
     DisplayStats();
+  }
 
-    _distanceUGUI.text = "DISTANCE: 0m";
+  public void ToggleSettingsMenu(bool settingsActive)
+  {
+    if (settingsActive)
+    {
+      _settingsPanel.SetActive(true);
+      _backBtn.SetActive(false);
+      SetSceneUI(-1);
+    }
+    else
+    {
+      _settingsPanel.SetActive(false);
+      _backBtn.SetActive(true);
+      SetSceneUI(SceneManager.GetActiveScene().buildIndex);
+    }
   }
 
   private void DisplayStats()
@@ -64,15 +82,15 @@ public class UIManager : Singleton<UIManager>
     SaveDataManager sdm = SaveDataManager.Instance;
 
     _scoreUGUI.text = sdm.FinalScore.ToString() + "m";
-    _vaultUGUI.text = sdm.ObstaclesVaulted.ToString();
-    _duckUGUI.text = sdm.ObstaclesDucked.ToString();
-
     _highScoreUGUI.text = sdm.CurrentSave.FarthestDistance.ToString("F0") + 'm';
-    _mostVaultUGUI.text = sdm.CurrentSave.MostObstaclesVaulted.ToString();
-    _mostDuckUGUI.text = sdm.CurrentSave.MostObstaclesDucked.ToString();
+    _totalScoreUGUI.text = sdm.CurrentSave.TotalDistance.ToString("F0") + 'm';
 
-    _totalScoreUGUI.text = sdm.CurrentSave.TotalDistance.ToString("F0");
+    _vaultUGUI.text = sdm.ObstaclesVaulted.ToString();
+    _mostVaultUGUI.text = sdm.CurrentSave.MostObstaclesVaulted.ToString();
     _totalVaultUGUI.text = sdm.CurrentSave.TotalObstaclesVaulted.ToString();
+
+    _duckUGUI.text = sdm.ObstaclesDucked.ToString();
+    _mostDuckUGUI.text = sdm.CurrentSave.MostObstaclesDucked.ToString();
     _totalDuckUGUI.text = sdm.CurrentSave.TotalObstaclesDucked.ToString();
   }
 

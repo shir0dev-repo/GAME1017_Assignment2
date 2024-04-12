@@ -24,12 +24,19 @@ public class GameManager : PersistentSingleton<GameManager>
   public void GameOver()
   {
     SaveDataManager.Save();
+    SoundManager.Instance.PlayMusic("GameOver");
     SceneLoader.LoadScene(2);
+  }
+
+  public void TogglePause()
+  {
+    TogglePause(Time.timeScale != 0);
   }
 
   public void TogglePause(bool shouldPause)
   {
     Time.timeScale = shouldPause ? 0 : 1;
+    UIManager.ToggleSettingsMenu(Time.timeScale == 0);
   }
 
   public void Quit()

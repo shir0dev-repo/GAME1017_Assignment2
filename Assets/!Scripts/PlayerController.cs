@@ -41,6 +41,10 @@ public class PlayerController : Singleton<PlayerController>
             DoJump();
         if (_grounded && Input.GetKeyDown(KeyCode.S))
             DoSlide();
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            GameManager.Instance.TogglePause();
+        }
     }
 
     private void FixedUpdate()
@@ -98,6 +102,7 @@ public class PlayerController : Singleton<PlayerController>
         ScrollManager.Instance.ShouldScroll = false;
         _anim.SetTrigger("_onDeath");
         SoundManager.Instance.PlaySound("Snake? Snaaake!");
+        GameManager.Instance.Invoke("GameOver", 3f);
     }
 
     private IEnumerator DamageDisplayCoroutine(float duration)

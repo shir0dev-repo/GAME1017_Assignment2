@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class ObstacleSpawner : MonoBehaviour
@@ -10,10 +11,13 @@ public class ObstacleSpawner : MonoBehaviour
 
     private bool _spawnWithTrigger = false;
 
+    public bool ShouldSpawn = true;
+
     private void Start()
     {
         StartCoroutine(SpawnObstacleCoroutine());
         PlayerController.Instance.PlayerHealth.OnInvulnerabilityChanged += ToggleObstacleTriggers;
+        SpawnObstacle(new(8, -5, 0));
     }
 
     public void SpawnObstacle(Vector3 spawnPoint)
@@ -27,7 +31,9 @@ public class ObstacleSpawner : MonoBehaviour
         }
         else
         {
-            obst = _currentObstacles[Random.Range(0, _currentObstacles.Count)];
+            obst = _currentObstacles.OrderByDescending(o => Mathf.Abs(o.transform.position.x - Camera.main.transform.position.x))
+                .ToArray()[Random.Range(0, _currentObstacles.Count - 1)];
+
             obst.GetComponent<Collider2D>().isTrigger = _spawnWithTrigger;
             obst.SetActive(true);
             obst.transform.position = spawnPoint;
@@ -62,6 +68,7 @@ public class ObstacleSpawner : MonoBehaviour
         float cameraXExtents = Camera.main.orthographicSize * Screen.width / Screen.height;
         while (true)
         {
+            if (!ShouldSpawn) yield break;
             timeElapsed += Time.deltaTime;
             //v = dt, t = d/v
             spawnInterval = 2f * cameraXExtents / ScrollManager.Instance.ScrollSpeed;
