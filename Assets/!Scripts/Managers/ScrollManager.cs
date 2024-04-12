@@ -24,6 +24,8 @@ public class ScrollManager : Singleton<ScrollManager>
 
   private void Update()
   {
+    if (!ShouldScroll) return;
+
     transform.position += Vector3.right * ScrollSpeed * Time.deltaTime;
     if (SaveDataManager.Instance != null)
       SaveDataManager.Instance.UpdateDistanceTravelled(Mathf.RoundToInt(transform.position.x));

@@ -16,7 +16,7 @@ public class PlayerController : Singleton<PlayerController>
     private Rigidbody2D _rb2d;
     private Animator _anim;
 
-    private bool _grounded, _sliding;
+    private bool _grounded, _sliding, _canMove = true;
     private float _inputDirection = 0;
 
     protected override void Awake()
@@ -28,10 +28,13 @@ public class PlayerController : Singleton<PlayerController>
         _health = GetComponent<Health>();
         _health.OnDamageTaken += OnDamageTaken;
         _health.OnDeath += OnDeath;
+        _health.OnDamageTaken += UIManager.Instance.UpdateLives;
     }
 
     private void Update()
     {
+        if (!_canMove) return;
+
         _inputDirection = Input.GetAxisRaw("Horizontal");
 
         if (_grounded && Input.GetKeyDown(KeyCode.Space))
@@ -42,6 +45,8 @@ public class PlayerController : Singleton<PlayerController>
 
     private void FixedUpdate()
     {
+        if (!_canMove) return;
+
         _grounded = IsGrounded();
         if (_sliding) return;
         _anim.SetBool("_isGrounded", _grounded);
@@ -53,6 +58,7 @@ public class PlayerController : Singleton<PlayerController>
     private void DoJump()
     {
         _rb2d.AddForce(Vector3.up * _jumpForce, ForceMode2D.Impulse);
+        SoundManager.Instance.PlaySound("Jump", 0.4f);
     }
 
     private void DoSlide()
@@ -63,6 +69,7 @@ public class PlayerController : Singleton<PlayerController>
         _sliding = true;
         _rb2d.velocity = Vector3.right * _slideForce;
         _anim.SetBool("_sliding", _sliding);
+        SoundManager.Instance.PlaySound("Slide");
         Invoke(nameof(FinishSlide), 0.5f);
     }
     private void FinishSlide()
@@ -81,11 +88,16 @@ public class PlayerController : Singleton<PlayerController>
     private void OnDamageTaken(int obj)
     {
         _anim.SetTrigger("_damageTaken");
+        SoundManager.Instance.PlaySound("Ouch");
         StartCoroutine(DamageDisplayCoroutine(10f));
     }
     private void OnDeath()
     {
+        GetComponentInChildren<SpriteRenderer>().material.color = Color.white;
+        _canMove = false;
+        ScrollManager.Instance.ShouldScroll = false;
         _anim.SetTrigger("_onDeath");
+        SoundManager.Instance.PlaySound("Snake? Snaaake!");
     }
 
     private IEnumerator DamageDisplayCoroutine(float duration)

@@ -22,7 +22,7 @@ public class AchievementManager : Singleton<AchievementManager>
 
     _achievementsList.Add(new Achievement(
       "Baby's First Steps",
-      "Survive for 500m.",
+      "Survive for 100m.",
       () => { return SaveDataManager.Instance.CurrentSave.FarthestDistance >= 100; }
     ));
 

@@ -10,7 +10,7 @@ public class SoundManager : Singleton<SoundManager>
 
   private AudioSource _sfxSource, _musicSource;
 
-  private float _sfxVolumeCache = 0.4f, _musicVolumeCache = 0.2f, _masterVolumeCache = 0.5f;
+  private float _sfxVolumeCache = 0.4f, _musicVolumeCache = 0.2f, _masterVolumeCache = 0.75f;
 
   private Coroutine _currentFadeInOutCO = null;
 
@@ -21,33 +21,39 @@ public class SoundManager : Singleton<SoundManager>
     _sfxSource = gameObject.AddComponent<AudioSource>();
     _musicSource = gameObject.AddComponent<AudioSource>();
 
-    InitAudioSources();
     InitResourceDictionaries();
+    InitAudioSources();
   }
 
   private void InitAudioSources()
   {
     _sfxSource.loop = false;
     _sfxSource.playOnAwake = false;
-    SetSFXVolume(_sfxVolumeCache);
 
     _musicSource.loop = true;
     _musicSource.playOnAwake = true;
-    SetMusicVolume(_musicVolumeCache);
+
+    SetMasterVolume(_masterVolumeCache);
     PlayMusicNoFade("Intro");
   }
 
   private void InitResourceDictionaries()
   {
     _musicDictionary.Add("Intro", Resources.Load<AudioClip>("Audio/Intro"));
+    _musicDictionary.Add("ActionStrike", Resources.Load<AudioClip>("Audio/ActionStrike"));
+    _musicDictionary.Add("GameOver", Resources.Load<AudioClip>("WakeUp"));
+    _sfxDictionary.Add("Ouch", Resources.Load<AudioClip>("Audio/ManAccidentallyPunchingTheFloor"));
+    _sfxDictionary.Add("Snake? Snaaake!", Resources.Load<AudioClip>("Audio/SnakeDeath"));
+    _sfxDictionary.Add("Slide", Resources.Load<AudioClip>("Audio/Slide"));
+    _sfxDictionary.Add("Jump", Resources.Load<AudioClip>("Audio/Jump"));
   }
 
-  public void PlaySound(string soundKey)
+  public void PlaySound(string soundKey, float volume = 1.0f)
   {
     if (!_sfxDictionary.ContainsKey(soundKey))
       throw new System.IndexOutOfRangeException(soundKey + " was not present in the sound effect dictionary!");
 
-    _sfxSource.PlayOneShot(_sfxDictionary[soundKey]);
+    _sfxSource.PlayOneShot(_sfxDictionary[soundKey], volume);
   }
 
   public void PlayMusic(string soundKey)

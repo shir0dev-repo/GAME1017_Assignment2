@@ -12,6 +12,10 @@ public class SaveDataManager : Singleton<SaveDataManager>
     private int _score;
     private int _obstaclesVaulted, _obstaclesDucked;
 
+    public int FinalScore => _score;
+    public int ObstaclesVaulted => _obstaclesVaulted;
+    public int ObstaclesDucked => _obstaclesDucked;
+
     protected override void Awake()
     {
         base.Awake();
@@ -43,15 +47,14 @@ public class SaveDataManager : Singleton<SaveDataManager>
             return new SaveData();
         }
     }
-
+    public void ClearSave()
+    {
+        _currentSave = new SaveData();
+        _score = 0;
+        _obstaclesVaulted = 0;
+        _obstaclesDucked = 0;
+    }
     public void UpdateDistanceTravelled(int distanceTravelled) => _score = distanceTravelled;
     public void VaultObstacle() => _obstaclesVaulted++;
     public void DuckObstacle() => _obstaclesDucked++;
-
-    protected override void OnApplicationQuit()
-    {
-        Save();
-
-        base.OnApplicationQuit();
-    }
 }

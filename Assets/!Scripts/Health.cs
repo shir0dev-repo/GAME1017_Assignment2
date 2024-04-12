@@ -26,7 +26,7 @@ public class Health : MonoBehaviour
         CurrentHealth -= damage;
         OnDamageTaken?.Invoke(CurrentHealth);
 
-        if (CurrentHealth < 0)
+        if (CurrentHealth <= 0)
             Die();
     }
 
